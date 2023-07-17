@@ -5,7 +5,9 @@
 static void stack_resize(struct Stack** stack);
 
 struct Stack* stack_cstr(size_t capacity) {
+    // sizeof(*stack) - the size of type *stack 
     struct Stack* stack = (struct Stack* ) calloc(1, sizeof(*stack));
+    // sizeof(*stack->ptr_on_stack_) - the size of type *(stack->ptr_on_stack_)
     stack->ptr_on_stack_ = (size_t* ) calloc(capacity, sizeof(*stack->ptr_on_stack_));
     assert(stack != nullptr);
     assert(stack->ptr_on_stack_ != nullptr);

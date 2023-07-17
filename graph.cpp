@@ -7,7 +7,8 @@
 static void resize_graph(struct Graph** graph);
 
 struct Node* create_node(const size_t vertex) {
-    struct Node* node = (struct Node* ) calloc(1, sizeof(struct Node));
+    // sizeof(*node) - the size of type *node
+    struct Node* node = (struct Node* ) calloc(1, sizeof(*node));
     assert(node);
     node->next_ = nullptr;
     node->vertex_ = vertex;
@@ -16,12 +17,12 @@ struct Node* create_node(const size_t vertex) {
 }
 
 struct Graph* create_graph(const size_t capacity) {
-    struct Graph* graph = (struct Graph* ) calloc(1, sizeof(struct Graph));
+    struct Graph* graph = (struct Graph* ) calloc(1, sizeof(*graph));
     assert(graph);
     graph->size_ = 0;
     graph->root_vertice_ = 0;
     graph->capacity_ = capacity;
-    graph->lists_ = (struct Node** ) calloc(capacity, sizeof(struct Node*));
+    graph->lists_ = (struct Node** ) calloc(capacity, sizeof(*graph->lists_));
     assert(graph->lists_);
     return graph;
 }
@@ -176,6 +177,8 @@ void remove_node(struct Graph* graph, const size_t vertex_num) {
     graph->lists_[vertex_pos] = nullptr;
     graph->size_--;
 
+    // remove incident edges 
+    // (go through all the vertices and find edges with removing node)
     for (size_t i = 0; i < graph->capacity_; ++i) {
         if (graph->lists_[i] != nullptr) {
             struct Node* tmp = graph->lists_[i]->next_;

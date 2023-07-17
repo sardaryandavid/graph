@@ -6,6 +6,11 @@ all: main
 main: main.o stack.o graph.o
 	$(CC) main.o stack.o graph.o -o main
 
+
+# Download gTest:
+# sudo apt-get install libgtest-dev
+# sudo apt-get install libtbb-dev
+
 tests: tests.cpp graph.cpp stack.cpp
 	$(CC) tests.cpp graph.cpp stack.cpp -o tests $(CFLAGS)
 
