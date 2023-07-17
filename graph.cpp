@@ -192,10 +192,8 @@ void remove_node(struct Graph* graph, const size_t vertex_num) {
                     break;
                 }
 
-                if (tmp != nullptr) {
-                    tmp_prev = tmp;
-                    tmp = tmp->next_;
-                }
+                tmp_prev = tmp;
+                tmp = tmp->next_;
             }
         }
     }

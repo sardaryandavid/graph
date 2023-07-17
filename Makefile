@@ -4,7 +4,7 @@ CFLAGS= -Wall -Wall -Wextra -Wpedantic -Werror -lgtest -pthread -fsanitize=undef
 all: main
 
 main: main.o stack.o graph.o
-	$(CC) main.o stack.o graph.o -o main
+	$(CC) main.o stack.o graph.o -o main $(CFLAGS)
 
 
 # Download gTest:
