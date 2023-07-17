@@ -26,7 +26,6 @@ struct Graph {
 
 struct Node* create_node(const size_t vertex); 
 struct Graph* create_graph(const size_t capacity);
-void resize_graph(struct Graph** graph);
 void delete_graph(struct Graph* graph);
 void delete_node(struct Node* node);
 void print_node_not_exist(const struct Graph* graph, const size_t vertex);

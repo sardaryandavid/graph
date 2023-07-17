@@ -4,8 +4,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+static void resize_graph(struct Graph** graph);
+
 struct Node* create_node(const size_t vertex) {
     struct Node* node = (struct Node* ) calloc(1, sizeof(struct Node));
+    assert(node);
     node->next_ = nullptr;
     node->vertex_ = vertex;
     node->colour = white;
@@ -14,19 +17,23 @@ struct Node* create_node(const size_t vertex) {
 
 struct Graph* create_graph(const size_t capacity) {
     struct Graph* graph = (struct Graph* ) calloc(1, sizeof(struct Graph));
+    assert(graph);
     graph->size_ = 0;
     graph->root_vertice_ = 0;
     graph->capacity_ = capacity;
     graph->lists_ = (struct Node** ) calloc(capacity, sizeof(struct Node*));
+    assert(graph->lists_);
     return graph;
 }
 
 void delete_graph(struct Graph* graph) {
-    assert(graph != nullptr);
+    assert(graph);
+    assert(graph->lists_);
 
     for (size_t i = 0; i < graph->capacity_; ++i) {
-        if (graph->lists_[i] != nullptr)
+        if (graph->lists_[i] != nullptr) {
             delete_node(graph->lists_[i]);
+        }
     }
 
     free(graph->lists_);
@@ -34,30 +41,37 @@ void delete_graph(struct Graph* graph) {
 }
 
 void delete_node(struct Node* node) {
-    assert(node != nullptr);
+    assert(node);
 
-    if (node->next_ != nullptr)
+    if (node->next_ != nullptr) {
         delete_node(node->next_);
+    }
 
     free(node);
 }
 
 bool node_exist(const struct Graph* graph, const size_t vertex_num) {
-    assert(graph != nullptr);
+    assert(graph);
+    assert(graph->lists_);
 
     for (size_t i = 0; i < graph->capacity_; ++i) {
-        if(graph->lists_[i] != nullptr && graph->lists_[i]->vertex_ == vertex_num)
+        if (graph->lists_[i] != nullptr && graph->lists_[i]->vertex_ == vertex_num) {
             return true;
+        }
     }
 
     return false;
 }
 
 bool edge_exist(const struct Graph* graph, const size_t vertex1, const size_t vertex2) {
-    assert(graph != nullptr);
+    assert(graph);
+    assert(graph->lists_);
+
     if (!node_exist(graph, vertex1) ||
-        !node_exist(graph, vertex1))
+        !node_exist(graph, vertex1)) {
         return false;
+    }
+
     size_t vertex1_pos = find_position(graph, vertex1);
     struct Node* node = graph->lists_[vertex1_pos];
     node = node->next_;
@@ -71,13 +85,17 @@ bool edge_exist(const struct Graph* graph, const size_t vertex1, const size_t ve
 }
 
 void add_node(struct Graph** graph, const size_t vertex_num) {
+    assert(graph);
+    assert((*graph)->lists_);
+
     if (node_exist(*graph, vertex_num)) {
         printf("Node with num %ld is already exist.\n", vertex_num); 
         return;
     }
 
-    if ((*graph)->size_ >= (*graph)->capacity_)
+    if ((*graph)->size_ >= (*graph)->capacity_) {
         resize_graph(graph);
+    }
 
     (*graph)->size_++;
 
@@ -89,23 +107,27 @@ void add_node(struct Graph** graph, const size_t vertex_num) {
         }
 }
 
-void resize_graph(struct Graph** graph) {
-    assert(graph != nullptr);
+static void resize_graph(struct Graph** graph) {
+    assert(graph);
+    assert((*graph)->lists_); 
 
-    struct Graph* new_graph = create_graph(RESIZE_COEFFICIENT * (*graph)->capacity_);
+    struct Node** new_graph_lists = (struct Node** ) calloc(RESIZE_COEFFICIENT * (*graph)->capacity_,
+                                                            sizeof(struct Node*));
+    assert(new_graph_lists);
+
     for (size_t i = 0; i < (*graph)->size_; ++i) {
-        new_graph->lists_[i] = (*graph)->lists_[i];
+        new_graph_lists[i] = (*graph)->lists_[i];
     }
     
-    new_graph->size_ = (*graph)->capacity_;
-    new_graph->capacity_ = RESIZE_COEFFICIENT * (*graph)->capacity_;
+    (*graph)->capacity_ = RESIZE_COEFFICIENT * (*graph)->capacity_;
     free((*graph)->lists_);
-    free(*graph);
-    *graph = new_graph;
+    (*graph)->lists_ = new_graph_lists;
 }
 
 void add_edge(struct Graph* graph, const size_t vertex1, const size_t vertex2) {
-    
+    assert(graph); 
+    assert(graph->lists_);
+
     if (edge_exist(graph, vertex1, vertex2)) {
         printf("Edge between nodes %ld and %ld is already exist.\n", vertex1, vertex2);
         return; 
@@ -128,18 +150,21 @@ void add_edge(struct Graph* graph, const size_t vertex1, const size_t vertex2) {
 }
 
 size_t find_position(const struct Graph* graph, const size_t vertex_num) {
-    assert(graph != nullptr);
+    assert(graph);
+    assert(graph->lists_);
 
     for (size_t i = 0; i < graph->capacity_; ++i) {
-        if(graph->lists_[i] != nullptr && graph->lists_[i]->vertex_ == vertex_num)
+        if (graph->lists_[i] != nullptr && graph->lists_[i]->vertex_ == vertex_num) {
             return i;
+        }
     }
 
     return graph->capacity_; // garbage
 }
 
 void remove_node(struct Graph* graph, const size_t vertex_num) {
-    assert(graph != nullptr);
+    assert(graph);
+    assert(graph->lists_);
 
     if (!node_exist(graph, vertex_num)) {
         printf("Node with num %ld is not exist\n", vertex_num);
@@ -174,7 +199,8 @@ void remove_node(struct Graph* graph, const size_t vertex_num) {
 }
 
 void remove_edge(struct Graph* graph, const size_t vertex1, const size_t vertex2) {
-    assert(graph != nullptr); 
+    assert(graph); 
+    assert(graph->lists_);
 
     if (!edge_exist(graph, vertex1, vertex2)) {
         printf("Edge between nodes 1 and 2 is not exist\n");
@@ -201,8 +227,9 @@ void root(struct Graph* graph, const size_t vertex_num) {
 }
 
 void print_graph(const struct Graph* graph) {
-
     assert(graph != nullptr);
+    assert(graph->lists_);
+
     printf("Start print graph\n");
     for (size_t i = 0; i < graph->size_; i++) {
         bool new_line = false;
@@ -218,14 +245,17 @@ void print_graph(const struct Graph* graph) {
             node = node->next_;
         }
 
-        if (new_line)
+        if (new_line) {
             printf("\n");
+        }
     }
     printf("End print graph\n");
 }
 
 struct Stack* reverse_post_order(const struct Graph* graph) {
-    assert(graph != nullptr);
+    assert(graph);
+    assert(graph->lists_);
+
     struct Stack* stack = stack_cstr(graph->size_);
     size_t root_pos = find_position(graph, graph->root_vertice_);
     struct Node* root_node = graph->lists_[root_pos];
@@ -236,18 +266,21 @@ struct Stack* reverse_post_order(const struct Graph* graph) {
 }
 
 void dfs_walk(const struct Graph* graph, struct Stack* stack, struct Node* node, const size_t node_pos) {
-    assert(graph != nullptr);
-    assert(stack != nullptr);
+    assert(graph);
+    assert(stack);
+    assert(graph->lists_);
 
     graph->lists_[node_pos]->colour = grey;
     struct Node* successor = node->next_;
     while (successor != nullptr) {
         size_t successor_pos = find_position(graph, successor->vertex_);
-        if (graph->lists_[successor_pos]->colour == grey)
+        if (graph->lists_[successor_pos]->colour == grey) {
             printf("Found loop: %ld -> %ld\n", node->vertex_, successor->vertex_);
+        }
         
-        if (graph->lists_[successor_pos]->colour == white)
+        if (graph->lists_[successor_pos]->colour == white) {
             dfs_walk(graph, stack, graph->lists_[successor_pos], successor_pos);
+        }
 
         successor = successor->next_;
     }

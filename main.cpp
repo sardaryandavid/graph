@@ -9,7 +9,7 @@ const int MAX_COMMAND_SIZE = 10;
 void launch_command(struct Graph* graph, char* line);
 
 int main()
-{   
+{  
     struct Graph* graph = create_graph(10);
     char line[MAX_LINE_SIZE];
 
@@ -22,8 +22,7 @@ int main()
     delete_graph(graph);
 }
 
-void launch_command(struct Graph* graph, char* line)
-{   
+void launch_command(struct Graph* graph, char* line) {   
     assert(line != nullptr);
     assert(graph != nullptr);
 

@@ -13,7 +13,6 @@ struct Stack {
 
 struct Stack* stack_cstr(size_t capacity);
 void stack_dstr(struct Stack* stack);
-void stack_resize(struct Stack** stack);
 void print_stack(const struct Stack* stack);
 void print_reverse_stack(const struct Stack* stack);
 void push(struct Stack** stack, const int val);
